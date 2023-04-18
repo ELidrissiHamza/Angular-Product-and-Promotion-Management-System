@@ -1,0 +1,66 @@
+<div class="container">
+  <nav  *ngIf="AuthService.hasRole('ADMIN')" class="p-2 ms-2 border border-info mb-2 mt-2">
+    <button  class="btn btn-outline-info"(click)="handleNewProduct()">
+      New Product
+    </button>
+  </nav>
+  <ng-template #errors >
+    <div class="bg-danger">
+    {{errorMessage}}
+    </div>
+  </ng-template>
+  <div class="card" *ngIf="products; else errors" >
+    <div class="card-header">
+      List of Products
+    </div>
+    <div class="card-body">
+      <form [formGroup]="SearchFormGroup" (ngSubmit)="handleSearchProduct()">
+        <div class="input-group">
+          <label class="input-group-text">Keyword : </label>
+          <input type="text" class="form-control" placeholder="Search"  name="searchText" formControlName="keyword">
+          <div class="input-group-append">
+            <button class="btn btn-info">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+
+        </div>
+      </form>
+      <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Product ID</th>
+            <th scope="col">Product Name</th>
+            <th scope="col">Product Price</th>
+          <th scope="col">Promotion</th>
+          <th scope="col"></th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let product of products">
+            <td>{{product.id}}</td>
+            <td>{{product.name}}</td>
+            <td>{{product.price}}</td>
+            <td ><i *ngIf="product.promotion" class="bi bi-hand-thumbs-up-fill text-success"></i></td>
+            <td *ngIf="AuthService.hasRole('ADMIN')"><button (click)="handleSetPromotion(product)" [ngClass]="product.promotion?'btn-danger':'btn-success'"  class="btn " >
+              <span *ngIf="product.promotion">Promo Off</span>
+              <span *ngIf="!product.promotion">Promo On</span>
+            </button></td>
+          <td *ngIf="AuthService.hasRole('ADMIN')"> <button (click)="handleDeleteProduct(product)" class="btn btn-danger" >
+            <i class="bi bi-trash"></i>
+            </button></td>
+          <td *ngIf="AuthService.hasRole('ADMIN')"> <button (click)="handleEditProduct(product)" class="btn btn-success " >
+            <i class="bi bi-pencil-fill"></i>
+          </button></td>
+
+        </tr>
+      </table>
+      <ul class="nav nav-pills">
+        <li *ngFor="let item of [].constructor(this.totalPages) , let i=index">
+          <a [ngClass]="i==currentPage?'btn-info':'btn-outline-info'" (click)="goToPage(i)" class="btn  ms-1 mt-1">{{i}}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
